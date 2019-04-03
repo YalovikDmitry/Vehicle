@@ -1,0 +1,77 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    defaultConfig {
+        applicationId "by.gmail.vehicle"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('../signed/dev_keystore.jks')
+            storePassword '12345678'
+            keyAlias 'alias'
+            keyPassword '12345678'
+        }
+        release {
+            //TODO add keys for release build(Google Play)
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            buildConfigField "String", "API_ENDPOINT",
+                    "\"http://www.kiparo.ru/t/fake-api/car-service.php\""
+        }
+        release {
+            //TODO change to signingConfigs.release for publishing on Google Play
+            signingConfig signingConfigs.debug
+            buildConfigField "String", "API_ENDPOINT",
+                    "\"http://www.kiparo.ru/t/fake-api/car-service.php\""
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    //Android support libs and UI
+    implementation rootProject.appcompatV7
+    implementation rootProject.supportV4
+    implementation rootProject.supportDesign
+    implementation rootProject.recyclerView
+
+    //Mvvm
+    implementation rootProject.lifecycle
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    kapt rootProject.lifecycleCompiler
+
+
+    //Rx
+    implementation rootProject.rxjava2Android
+
+    //Tests
+    testImplementation rootProject.junit
+    androidTestImplementation rootProject.supportTestRunner
+    androidTestImplementation rootProject.supportTestEspresso
+
+    //Modules
+    implementation project(path: ":data")
+}
